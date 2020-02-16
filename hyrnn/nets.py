@@ -9,24 +9,29 @@ import geoopt
 def mobius_linear(
     input,
     weight,
-    bias=None,
-    hyperbolic_input=True,
-    hyperbolic_bias=True,
-    nonlin=None,
-    c=1.0,
+    bias = None,
+    hyperbolic_input = True,
+    hyperbolic_bias = True,
+    nonlin = None,
+    c = 1.0,
 ):
     if hyperbolic_input:
-        output = pmath.mobius_matvec(weight, input, c=c)
+        output = pmath.mobius_matvec(weight, input, c = c)
     else:
         output = torch.nn.functional.linear(input, weight)
-        output = pmath.expmap0(output, c=c)
+        output = pmath.expmap0(output, c = c)
+
     if bias is not None:
         if not hyperbolic_bias:
-            bias = pmath.expmap0(bias, c=c)
-        output = pmath.mobius_add(output, bias, c=c)
+            bias = pmath.expmap0(bias, c = c)
+
+        output = pmath.mobius_add(output, bias, c = c)
+
     if nonlin is not None:
         output = pmath.mobius_fn_apply(nonlin, output, c=c)
+
     output = pmath.project(output, c=c)
+
     return output
 
 
