@@ -1,6 +1,6 @@
 import torch.nn as nn
 from typing import Any, Mapping
-from catalyst.dl.experiments import SupervisedRunner
+from catalyst.dl.runner.supervised import SupervisedRunner
 
 
 class CustomRunner(SupervisedRunner):
@@ -31,6 +31,7 @@ class CustomRunner(SupervisedRunner):
                 self.target_key: batch[2],
             }
         batch = super()._batch2device(batch, device)
+
         return batch
 
     def predict_batch(self, batch: Mapping[str, Any]):

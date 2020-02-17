@@ -93,10 +93,11 @@ class RNNBase(nn.Module):
         self.cell_target = self.cell(embedding_dim, self.hidden_dim, self.num_layers)
 
     def forward(self, input):
-        source_input = input[0]
-        target_input = input[1]
-        alignment = input[2]
-        batch_size = alignment.shape[0]
+        source_input = input['features'][0]
+        target_input = input['features'][1]
+        alignment = input['alignments'][2]
+
+        batch_size = alignment.shape
 
         source_input_data = self.embedding(source_input.data)
         target_input_data = self.embedding(target_input.data)
