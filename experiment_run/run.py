@@ -10,7 +10,7 @@ import geoopt
 import prefix_dataset
 import model, runner
 
-from catalyst.dl.callbacks import PrecisionCallback
+from catalyst.dl.callbacks.metrics.accuracy import AccuracyCallback
 
 
 parser = argparse.ArgumentParser()
@@ -43,7 +43,10 @@ parser.add_argument("--j", type=int, default=1)
 
 
 args = parser.parse_args()
-os.mkdir("./logs")
+try:
+    os.mkdir("./logs")
+except FileExistsError:
+    pass
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 data_dir = args.data_dir
 logdir = os.path.join("./logs", args.log_dir)
@@ -104,8 +107,8 @@ runner.train(
     criterion=criterion,
     optimizer=optimizer,
     loaders={"train": loader_train, "valid": loader_test},
-    callbacks=[PrecisionCallback(precision_args=[1])],
+    callbacks=[AccuracyCallback()],
     logdir=logdir,
-    n_epochs=n_epochs,
+    num_epochs=n_epochs,
     verbose=args.verbose,
 )

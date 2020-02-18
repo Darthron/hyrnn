@@ -93,13 +93,17 @@ class RNNBase(nn.Module):
         self.cell_target = self.cell(embedding_dim, self.hidden_dim, self.num_layers)
 
     def forward(self, input):
-        source_input = input[0]
-        target_input = input[1]
-        alignment = input[2]
+
+        source_input = input['features'][0][0]
+        target_input = input['features'][1][0]
+        source_input_batch_sizes = input['features'][0][1]
+        target_input_batch_sizes = input['features'][0][1]
+        alignment = input['alignments']
+
         batch_size = alignment.shape[0]
 
-        source_input_data = self.embedding(source_input.data)
-        target_input_data = self.embedding(target_input.data)
+        source_input_data = self.embedding(source_input)
+        target_input_data = self.embedding(target_input)
 
         zero_hidden = torch.zeros(
             self.num_layers,
@@ -118,10 +122,10 @@ class RNNBase(nn.Module):
         # ht: (num_layers * num_directions, batch, hidden_size)
 
         source_input = torch.nn.utils.rnn.PackedSequence(
-            source_input_data, source_input.batch_sizes
+            source_input_data, source_input_batch_sizes
         )
         target_input = torch.nn.utils.rnn.PackedSequence(
-            target_input_data, target_input.batch_sizes
+            target_input_data, target_input_batch_sizes
         )
 
         _, source_hidden = self.cell_source(source_input, zero_hidden)
@@ -131,6 +135,7 @@ class RNNBase(nn.Module):
         source_hidden = source_hidden[-1]
         target_hidden = target_hidden[-1][alignment]
 
+        print("00000000000000000000000000000000000000000000000000000\n\n\n")
         if self.decision_type == "hyp":
             if "eucl" in self.cell_type:
                 source_hidden = pmath.expmap0(source_hidden, c=self.c)

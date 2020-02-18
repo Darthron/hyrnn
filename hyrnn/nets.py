@@ -33,7 +33,10 @@ def mobius_linear(
 def one_rnn_transform(W, h, U, x, b, c):
     W_otimes_h = pmath.mobius_matvec(W, h, c=c)
     U_otimes_x = pmath.mobius_matvec(U, x, c=c)
+    print(W_otimes_h.shape)
+    print(U_otimes_x.shape)
     Wh_plus_Ux = pmath.mobius_add(W_otimes_h, U_otimes_x, c=c)
+
     return pmath.mobius_add(Wh_plus_Ux, b, c=c)
 
 
@@ -253,6 +256,7 @@ class MobiusGRU(torch.nn.Module):
         # input shape: seq_len, batch, input_size
         # hx shape: batch, hidden_size
         is_packed = isinstance(input, torch.nn.utils.rnn.PackedSequence)
+
         if is_packed:
             input, batch_sizes = input[:2]
             max_batch_size = int(batch_sizes[0])
